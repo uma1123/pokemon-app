@@ -21,6 +21,7 @@ module.exports = {
         "pokemon-fighting": "#DE911F",
         "pokemon-ice": "#92C3F4",
         "pokemon-dragon": "#E08B2B",
+        whiteTransparent: "rgba(255, 255, 255, 0.3)",
       },
     },
   },
