@@ -35,14 +35,35 @@ export default function APP() {
           const res = await axios.get(pokemon.url);
           const pokemonData = res.data;
 
+          //ポケモン日本語の取得
+          const speciesRes = await axios.get(pokemonData.species.url);
+          const japaneseName =
+            speciesRes.data.names.find(
+              (nameObj: { language: { name: string }; name: string }) =>
+                nameObj.language.name === "ja"
+            )?.name || pokemonData.name;
+
+          //日本語のタイプを取得
+          const japaneseTypeRes = await Promise.all(
+            pokemonData.types.map(
+              async (typeObj: { type: { url: string } }) => {
+                const typeRes = await axios.get(typeObj.type.url);
+                return typeRes.data.names.find(
+                  (nameObj: { language: { name: string }; name: string }) =>
+                    nameObj.language.name === "ja"
+                )?.name;
+              }
+            )
+          );
+
           // 必要なデータを整形してreturnする
           return {
             id: pokemonData.id,
-            name: pokemonData.name,
+            name: japaneseName,
             image:
               pokemonData.sprites?.other?.["official-artwork"]?.front_default ||
               "画像がありません",
-            type: pokemonData.types?.[0]?.type?.name || "不明",
+            type: japaneseTypeRes[0] || "不明",
           };
         })
       );
@@ -68,44 +89,45 @@ export default function APP() {
   /*Tailwind CSSでは、動的にクラス名を生成することができるものの、`bg-${pokemon.type}`のような方法は動的にクラス名を評価しないため、期待通りの効果が得られない*/
 
   //クラス名をハードコーディング
+  // クラス名を日本語タイプ対応に
   const getBackgroundColor = (type: string) => {
     switch (type) {
-      case "rock":
-        return "bg-rock";
-      case "ghost":
-        return "bg-ghost";
-      case "electric":
-        return "bg-electric";
-      case "bug":
-        return "bg-bug";
-      case "poison":
-        return "bg-poison";
-      case "normal":
-        return "bg-normal";
-      case "fairy":
-        return "bg-fairy";
-      case "fire":
-        return "bg-fire";
-      case "grass":
-        return "bg-grass";
-      case "water":
-        return "bg-water";
-      case "dark":
-        return "bg-dark";
-      case "psychic":
-        return "bg-psychic";
-      case "ground":
-        return "bg-ground";
-      case "steel":
-        return "bg-steel";
-      case "fighting":
-        return "bg-fighting";
-      case "ice":
-        return "bg-ice";
-      case "dragon":
-        return "bg-dragon";
+      case "いわ":
+        return "bg-pokemon-rock";
+      case "ゴースト":
+        return "bg-pokemon-ghost";
+      case "でんき":
+        return "bg-pokemon-electric";
+      case "むし":
+        return "bg-pokemon-bug";
+      case "どく":
+        return "bg-pokemon-poison";
+      case "ノーマル":
+        return "bg-pokemon-normal";
+      case "フェアリー":
+        return "bg-pokemon-fairy";
+      case "ほのお":
+        return "bg-pokemon-fire";
+      case "くさ":
+        return "bg-pokemon-grass";
+      case "みず":
+        return "bg-pokemon-water";
+      case "あく":
+        return "bg-pokemon-dark";
+      case "エスパー":
+        return "bg-pokemon-psychic";
+      case "じめん":
+        return "bg-pokemon-ground";
+      case "はがね":
+        return "bg-pokemon-steel";
+      case "かくとう":
+        return "bg-pokemon-fighting";
+      case "こおり":
+        return "bg-pokemon-ice";
+      case "ドラゴン":
+        return "bg-pokemon-dragon";
       default:
-        return "bg-normal"; // デフォルトの色を指定
+        return "bg-pokemon-normal"; // デフォルトの色を指定
     }
   };
 
