@@ -1,6 +1,8 @@
 import axios from "axios";
 import Card from "./card.tsx";
+import Details from "./Details.tsx";
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 // ポケモンのデータの型を指定
 interface Pokemon {
@@ -132,28 +134,39 @@ export default function APP() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-12 px-2">
-      <h1 className="text-2xl mb-4">ポケモン図鑑</h1>
-      <div className="flex flex-col items-center justify-center">
-        <div className="flex flex-wrap items-center justify-center">
-          {allPokemons.map((pokemon) => (
-            <Card
-              key={pokemon.id}
-              id={pokemon.id}
-              image={pokemon.image}
-              name={pokemon.name}
-              type={pokemon.type}
-              className={getBackgroundColor(pokemon.type)}
-            />
-          ))}
-        </div>
+    <Router>
+      <div className="flex flex-col items-center justify-center min-h-screen py-12 px-2">
+        <Routes>
+          {/* Main Route */}
+          <Route
+            path="/"
+            element={
+              <div className="flex flex-col items-center justify-center">
+                <h1 className="text-2xl mb-4">ポケモン図鑑</h1>
+                <div className="flex flex-wrap items-center justify-center">
+                  {allPokemons.map((pokemon) => (
+                    <Card
+                      key={pokemon.id}
+                      id={pokemon.id}
+                      image={pokemon.image}
+                      name={pokemon.name}
+                      type={pokemon.type}
+                      className={getBackgroundColor(pokemon.type)}
+                    />
+                  ))}
+                </div>
+                <button
+                  className="mt-4 p-2 bg-blue-500 text-white rounded"
+                  onClick={() => setOffset((prev) => prev + limit)}
+                >
+                  次のポケモンを表示
+                </button>
+              </div>
+            }
+          />
+          <Route path="/pokemon/:id" element={<Details />} />
+        </Routes>
       </div>
-      <button
-        className="mt-4 p-2 bg-blue-500 text-white rounded"
-        onClick={() => setOffset((prev) => prev + limit)}
-      >
-        次のポケモンを表示
-      </button>
-    </div>
+    </Router>
   );
 }
